@@ -1,0 +1,9 @@
+[debug] > Exec(doc, None, None)
+[debug] Evaluating tasks: Compile / doc
+[debug] Running task... Cancel: Signal, check cycles: false, forcegc: true
+[info] Main Scala API documentation to C:\Users\eetum\IdeaProjects\OS2Cassino\target\scala-2.13\api...
+[info] Non-compiled module 'compiler-bridge_2.13' for Scala 2.13.8. Compiling...
+[info]   Compilation completed in 11.723s.
+[info] Main Scala API documentation successful.
+[success] Total time: 14 s, completed 5.3.2022 klo 15.00.20
+[debug] > Exec(idea-shell, None, None)
