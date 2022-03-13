@@ -4,7 +4,7 @@ import scala.collection.mutable.Buffer
 
 class Game(id: String) {
   private val ID = id
-  private val players: Map[Player, Int] = Map()
+  private var players: Map[Player, Int] = Map()
 
   def getID(): String = ID
 
@@ -24,15 +24,24 @@ class Game(id: String) {
     ret
   }
 
-  def addPlayer(name: String): Unit = {
+  def addPlayer(name: String): Player = {
+    val player = new Player(name)
     try{
       if(this.getPlayerNames().contains(name)) throw new SameNameException("Player with the name \"" + name + "\" already exists" )
       else {
-        val player = new Player(name)
         players(player) = 0
       }
     } catch {
         case SameNameException(text) => Console.print(text + "\n")
       }
+    player
   }
+
+  def updatePoints(newPoints: Map[Player, Int]): Unit = {
+    players = newPoints
+  }
+
+  def save(filename: String): Unit = {}
+  def load(filename: String): Unit = {}
+
 }
