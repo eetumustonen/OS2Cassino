@@ -31,9 +31,16 @@ object Test extends App {
 
   //Testing class Round.......................................
   val round = new Round(newPoints)
-  Console.print(round)
   round.deal()
-  round.nextTurn()
-  Console.print(round)
 
+  Console.print(round)
+  //HOW TO SELECT A PLAYERS CARD SEEMS TO BE DIFFICULT
+  val testC = round.playerCards(round.inTurn()).returnFirst().get
+  Console.print("Trying to trail card: " + testC + "\n")
+  //Trailing
+  round.trail(testC.getSuit(), testC.getValue())
+  Console.print(round)
+  //Picking a card from the deck
+  round.pickNew()
+  Console.print(round)
 }

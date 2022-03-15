@@ -29,7 +29,7 @@ class Game(id: String) {
     player
   }
 
-  def startRound(data: Map[Player, Int]): Map[Player, Int] = {???}
+  def startRound(data: Map[Player, Int]) = ???
 
   def updatePoints(newPoints: Map[Player, Int]): Unit = {
     players = newPoints

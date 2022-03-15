@@ -19,6 +19,21 @@ class Deck {
       ret = cards(i).findThis(suit, value)
       i += 1
     }
+    try {if(ret == None) throw new NoSuchCardException("In returnCard(): This deck doesn't contain card: " + suit + value + "\n")}
+    catch {case NoSuchCardException(text) => Console.print(text)}
+    ret
+  }
+
+  def returnFirst(): Option[Card] = {
+    var ret: Option[Card] = None
+    try {
+      if(!cards.isEmpty) {
+        ret = Some(cards.head)
+      }
+      else throw new EmptyDeckException("The deck is empty")
+    } catch {
+      case EmptyDeckException(text) => Console.print(text + "\n")
+    }
     ret
   }
 
@@ -79,8 +94,8 @@ class Deck {
     try {
       if(card == None) throw new NoSuchCardException("Parameter card is None" + "\n")
       try {
-      if(cards.isEmpty) throw new NoSuchCardException("This deck doesn't contain card: " + card.get + "\n")
-      else if(!cards.contains(card.get)) throw new NoSuchCardException("This deck doesn't contain card: " + card.get + "\n")
+      if(cards.isEmpty) throw new NoSuchCardException("In removeCard(): This deck doesn't contain card: " + card.get + "\n")
+      else if(!cards.contains(card.get)) throw new NoSuchCardException("In removeCard(): This deck doesn't contain card: " + card.get + "\n")
       else {
         val index = cards.indexOf(card.get)
         cards.remove(index)

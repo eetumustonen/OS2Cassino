@@ -11,7 +11,7 @@ class Round(playerData: Map[Player, Int]) {
   private var turnIndex = 0
 
   private var stacks: Map[Player, Deck] = Map()
-  private var playerCards: Map[Player, Deck] = Map()
+  var playerCards: Map[Player, Deck] = Map()
 
   for(i <- players){
     stacks(i) = new Deck
@@ -23,6 +23,8 @@ class Round(playerData: Map[Player, Int]) {
   val deck = new Deck
   deck.fullDeck()
   deck.shuffle()
+
+  def inTurn(): Player = turn
 
   def nextTurn(): Unit = {
     if(turnIndex == players.size -1) turnIndex = 0
@@ -41,8 +43,14 @@ class Round(playerData: Map[Player, Int]) {
       }
   }
 
-  def trail() = {???}
-  def pickNew() = {???}
+  def trail(s: Char, v: Char) = {
+    val card = playerCards(turn).returnCard(s, v)
+    val c = playerCards(turn).removeCard(card)
+    table.addCard(c)
+  }
+  def pickNew() = {
+    playerCards(turn).addCard(deck.pickFirst())
+  }
   def checkValidity(card: Card, cards: Buffer[Card]): Boolean = {???}
   def capture = {???}
   def sweep = {???}
@@ -55,7 +63,7 @@ class Round(playerData: Map[Player, Int]) {
   def getPoints(): Map[Player, Int] = points
 
   override def toString(): String = {
-    var ret = ""
+    var ret = "####################################" + "\n"
     for(i <- playerCards){
       if(turn.equals(i._1)) ret = ret + "● "+ i._1.getName() + ": " + i._2
       else ret = ret + "  " + i._1.getName() + ": " + i._2
