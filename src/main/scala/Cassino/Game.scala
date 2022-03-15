@@ -16,14 +16,6 @@ class Game(id: String) {
     ret
   }
 
-  override def toString(): String = {
-    var ret: String = ""
-    for(i <- players){
-      ret = ret + i._1.getName() + ": " + i._2 + "\n"
-    }
-    ret
-  }
-
   def addPlayer(name: String): Player = {
     val player = new Player(name)
     try{
@@ -37,11 +29,21 @@ class Game(id: String) {
     player
   }
 
+  def startRound(data: Map[Player, Int]): Map[Player, Int] = {???}
+
   def updatePoints(newPoints: Map[Player, Int]): Unit = {
     players = newPoints
   }
 
   def save(filename: String): Unit = {}
   def load(filename: String): Unit = {}
+
+  override def toString(): String = {
+    var ret: String = ""
+    for(i <- players){
+      ret = ret + i._1.getName() + ": " + i._2 + "\n"
+    }
+    ret
+  }
 
 }

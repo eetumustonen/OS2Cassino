@@ -12,7 +12,7 @@ class Deck {
   private val values: Buffer[Char] = Buffer('A', '2', '3', '4', '5', '6', '7', '8' , '9', 'T', 'J', 'Q', 'K' )
   private val suits: Buffer[Char] = Buffer('♠', '♣', '♥', '♦')
 
-  def pickCard(suit: Char, value: Char): Option[Card] = {
+  def returnCard(suit: Char, value: Char): Option[Card] = {
     var ret: Option[Card] = None
     var i = 0
     while(ret == None && i != cards.length){
@@ -22,10 +22,13 @@ class Deck {
     ret
   }
 
-  def first(): Option[Card] = {
+  def pickFirst(): Option[Card] = {
     var ret: Option[Card] = None
     try {
-      if(!cards.isEmpty) ret = Some(cards.head)
+      if(!cards.isEmpty) {
+        ret = Some(cards.head)
+        this.removeCard(ret)
+      }
       else throw new EmptyDeckException("The deck is empty")
     } catch {
       case EmptyDeckException(text) => Console.print(text + "\n")
@@ -44,14 +47,6 @@ class Deck {
         cards += new Card(i, j, false)
       }
     }
-  }
-
-  override def toString(): String = {
-    var ret = ""
-    for(i <- cards){
-      ret = ret + i + ", "
-    }
-    ret
   }
 
   def shuffle(): Unit = {
@@ -79,7 +74,6 @@ class Deck {
     ret
   }
 
-  //Check invalid input
   def removeCard(card: Option[Card]): Option[Card] = {
     var ret: Option[Card] = None
     try {
@@ -98,7 +92,15 @@ class Deck {
     } catch {
       case NoSuchCardException(text) => Console.print(text)
     }
+    ret
+  }
 
+  override def toString(): String = {
+    var ret = ""
+    for(i <- cards){
+      ret = ret + i + "  "
+    }
+    ret = ret + "\n"
     ret
   }
 }
