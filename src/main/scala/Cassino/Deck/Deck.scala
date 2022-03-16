@@ -12,6 +12,35 @@ class Deck {
   private val values: Buffer[Char] = Buffer('A', '2', '3', '4', '5', '6', '7', '8' , '9', 'T', 'J', 'Q', 'K' )
   private val suits: Buffer[Char] = Buffer('♠', '♣', '♥', '♦')
 
+  def pointsAndSpades(): (Int, Int) = {
+    var p = 0
+    var s = 0
+    for(i <- cards){
+      if(i.getValue() == 'A') p += 1
+      if(i.toString == "♦T") p += 2
+      if(i.toString == "♠2") p += 1
+      if(i.getSuit == '♠') s += 1
+    }
+    (p, s)
+  }
+
+  def deckSize(): Int = {
+    cards.length
+  }
+
+  def fullDeck(): Unit = {
+    cards.clear()
+    for(i <- suits){
+      for(j <- values){
+        cards += new Card(i, j, false)
+      }
+    }
+  }
+
+  def shuffle(): Unit = {
+    cards = scala.util.Random.shuffle(cards)
+  }
+
   def returnCard(suit: Char, value: Char): Option[Card] = {
     var ret: Option[Card] = None
     var i = 0
@@ -24,6 +53,7 @@ class Deck {
     ret
   }
 
+  //FOR TESTING
   def returnFirst(): Option[Card] = {
     var ret: Option[Card] = None
     try {
@@ -51,23 +81,6 @@ class Deck {
     ret
   }
 
-  def deckSize(): Int = {
-    cards.length
-  }
-
-  def fullDeck(): Unit = {
-    cards.clear()
-    for(i <- suits){
-      for(j <- values){
-        cards += new Card(i, j, false)
-      }
-    }
-  }
-
-  def shuffle(): Unit = {
-    cards = scala.util.Random.shuffle(cards)
-  }
-
   def addCard(card: Option[Card]): Option[Card] = {
     var ret: Option[Card] = None
     try {
@@ -84,8 +97,6 @@ class Deck {
     } catch {
       case NoSuchCardException(text) => Console.print(text)
     }
-
-
     ret
   }
 

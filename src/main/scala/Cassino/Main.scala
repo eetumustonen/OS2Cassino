@@ -1,5 +1,8 @@
 package Cassino
 
 object Main extends App {
-  Console.println("Project starts")
+  // THE ENGINE IS A WHILE LOOP
+  while(true){
+
+  }
 }
