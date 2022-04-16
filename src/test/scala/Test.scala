@@ -57,7 +57,7 @@ object Test extends App {
   round2.trail('♦', 'K')
   Console.print(round2.stacksToString())
   Console.print(game2)
-  game2.updatePoints(round2.getPoints())
+  game2.updatePoints()
   Console.print(game2)
   //Player3 gets 3 points, 1 for most cards and 2 for most spades.
 }

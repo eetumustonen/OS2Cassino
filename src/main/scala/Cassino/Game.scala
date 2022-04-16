@@ -5,6 +5,8 @@ import scala.collection.mutable.Buffer
 class Game(id: String) {
   private val ID = id
   private var players: Map[Player, Int] = Map()
+
+  //MAYBE MAKE PRIVATE
   var currentRound: Option[Round] = None
 
   def getID(): String = ID
@@ -32,6 +34,7 @@ class Game(id: String) {
 
   def startRound() = {
     try {
+      //CHECK THIS AGAIN IN THE USER INTERFACE AND ASK PLAYER NAME
       if(players.size == 0) throw new PlayersMissingException("Can't start a round before at least one player is added.")
       else currentRound = Some(new Round(players))
     } catch {
@@ -40,15 +43,15 @@ class Game(id: String) {
   }
 
 
-  def updatePoints(newPoints: Map[Player, Int]): Unit = {
-    players = newPoints
+  def updatePoints(): Unit = {
+    players = currentRound.get.getPoints()
   }
 
   def save(filename: String): Unit = {}
   def load(filename: String): Unit = {}
 
   override def toString(): String = {
-    var ret: String = ""
+    var ret: String = ID + "\n"
     for(i <- players){
       ret = ret + i._1.getName() + ": " + i._2 + "\n"
     }
