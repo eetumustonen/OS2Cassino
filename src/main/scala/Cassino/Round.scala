@@ -99,12 +99,18 @@ class Round(playerData: Map[Player, Int]) {
       case '2' => if(card.getSuit() == '♠') c = 15 else c = 2
       case _   => c = card.getNumericValue()
     }
+    print(c + "\n")
     //numeric values of the cards to capture in a buffer
     val cc: Buffer[Int] = Buffer()
     for(i <- cards){
       cc += i.getNumericValue()
+      print(i.getNumericValue() + ", ")
     }
-
+  //EVERYTHING WORKS THIS FAR
+    if(!cc.forall(_ <= c)) print("\nThe move is invalid.")
+    else {
+      cc.filterNot(_ == c)
+    }
 
 
 
