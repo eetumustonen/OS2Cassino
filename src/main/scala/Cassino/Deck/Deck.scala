@@ -32,7 +32,7 @@ class Deck {
     cards.clear()
     for(i <- suits){
       for(j <- values){
-        cards += new Card(i, j, false)
+        cards += new Card(i, j)
       }
     }
   }
@@ -41,6 +41,8 @@ class Deck {
     cards = scala.util.Random.shuffle(cards)
   }
 
+  def getCardbyIndex(index: Int): Card = cards(index)
+
   def returnCard(suit: Char, value: Char): Option[Card] = {
     var ret: Option[Card] = None
     var i = 0
@@ -48,8 +50,11 @@ class Deck {
       ret = cards(i).findThis(suit, value)
       i += 1
     }
-    try {if(ret == None) throw new NoSuchCardException("In returnCard(): This deck doesn't contain card: " + suit + value + "\n")}
-    catch {case NoSuchCardException(text) => Console.print(text)}
+    try {
+      if(ret == None) throw new NoSuchCardException("In returnCard(): This deck doesn't contain card: " + suit + value + "\n")}
+    catch {
+      case NoSuchCardException(text) => Console.print(text)
+    }
     ret
   }
 

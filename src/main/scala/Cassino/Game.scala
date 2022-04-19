@@ -11,6 +11,8 @@ class Game(id: String) {
 
   def getID(): String = ID
 
+  def getPoints(): Map[Player, Int] = players
+
   def getPlayerNames(): Buffer[String] = {
     val ret: Buffer[String] = Buffer()
     for(i <- players){

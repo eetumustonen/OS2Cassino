@@ -2,17 +2,29 @@ package Cassino.Deck
 
 
 /*
-A class for creating card objects in class Deck. This class has a subclass SpecialCard.
+A class for creating card objects in class Deck.
  */
 
-class Card(s: Char, v: Char, spec: Boolean) {
+class Card(s: Char, v: Char) {
   private val suit = s
   private val value = v
-  private val special = spec
-  def isSpecial(): Boolean =  special
-// Getting special card's value is implemented later
+
   def getValue(): Char = value
   def getSuit(): Char = suit
+
+  //THESE ARE TABLE VALUES, HAND VALUES ARE HANDLED IN checkValidity()
+  def getNumericValue(): Int = {
+    var r = 0
+    value match {
+      case 'T' => r = 10
+      case 'J' => r = 11
+      case 'Q' => r = 12
+      case 'K' => r = 13
+      case 'A' => r = 1
+      case _   => r = value.asDigit
+    }
+    r
+  }
 
   def findThis(st: Char, vl: Char): Option[Card] = {
     var ret: Option[Card] = None

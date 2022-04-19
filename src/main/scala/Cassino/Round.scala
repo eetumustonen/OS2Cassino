@@ -81,7 +81,35 @@ class Round(playerData: Map[Player, Int]) {
     this.nextTurn()
     }
 
-  def checkValidity(card: Card, cards: Buffer[Card]): Boolean = {true}
+
+  /*
+  This is the algorithm to check whether the user's attempt to capture certain cards is valid.
+  First removing all cards that match the player’s card.
+  Then starting from combinations of 2 cards which’s sum is the player’s card are removed.
+  Then combinations of 3, 4, 5
+
+   */
+  def checkValidity(card: Card, cards: Buffer[Card]): Boolean = {
+    var ret = false
+    //numeric value of the card to capture with
+    var c = 0
+    card.getValue() match {
+      case 'A' => c = 14
+      case 'T' => if(card.getSuit() == '♦') c = 16 else c = 10
+      case '2' => if(card.getSuit() == '♠') c = 15 else c = 2
+      case _   => c = card.getNumericValue()
+    }
+    //numeric values of the cards to capture in a buffer
+    val cc: Buffer[Int] = Buffer()
+    for(i <- cards){
+      cc += i.getNumericValue()
+    }
+
+
+
+
+    ret
+  }
 
   def capture(s: Char, v: Char, cards: Buffer[Card]) = {
     val card = playerCards(turn).returnCard(s, v)
@@ -134,7 +162,7 @@ class Round(playerData: Map[Player, Int]) {
   def getPoints(): Map[Player, Int] = points
 
   override def toString(): String = {
-    var ret = "###################################" + "\n"
+    var ret = "\n"
     for(i <- playerCards){
       var space = ":"
       for(j <- 0 until 8-i._1.getName().length) space += " "
