@@ -1,46 +1,106 @@
 package Cassino
 import Cassino.Deck.Card
 
+
+import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.Buffer
 import scala.io.StdIn.readLine
 import scala.io.StdIn.readInt
 
 object Main extends App {
-  //Console.println("Welcome to Cassino, insert an id for this game instance: "+ "\n")
-
-  //PRINT A GUIDE WITH A COMMANDS AND RULES AND SUCH
-
-  //val id = readLine()
-  val id = "123"
-  val game = new Game(id)
-
-  //add players
-
-  //REMOVE THE COMMENT INDICATORS FROM NEXT BLOCK
-
-  /*
-  var nextPlayer = true
-  var plrCount = 1
-  while(nextPlayer){
-    Console.println("Please enter name for player " + plrCount + " or write \"START\" to start the game")
-    val name = readLine()
-    if(name.toUpperCase == "START") nextPlayer = false
-    else {
-      game.addPlayer(name)
-      plrCount += 1
+  //ONLY SAVED FILES SHOULD BE ABLE TO BE LOADED
+  // require that its "#####.Cassino" # is a digit
+  def load(filename: String): Buffer[String] = {
+    var ret: Buffer[String] = Buffer()
+    try {
+      val fileIn = new FileReader(filename)
+      val linesIn = new BufferedReader(fileIn)
+      try {
+        var oneLine = ""
+        while({oneLine = linesIn.readLine();oneLine != "END" && oneLine != null}){
+          ret = ret :+ oneLine
+        }
+      } finally {
+        fileIn.close()
+        linesIn.close()
+      }
+    } catch {
+      case notFound: FileNotFoundException => Console.println("FileNotFound")
+      case e: IOException => Console.println("IOException")
     }
-    if(plrCount == 13) {
-      nextPlayer = false
-      Console.println("Maximum number of players added.")
-    }
+    ret
   }
-  */
 
-  //DELETE THESE AFTER TESTING
-  game.addPlayer("Eetu")
-  game.addPlayer("Aleksi")
-  game.addPlayer("Mimmi")
-  Console.println("Players added, lets start the game\n" + game) // to check it works
+  def newGame(): Game = {
+    print("Give the new game an ID that is 5 digits without whitespace:\n")
+    var idOk = false
+    var game = new Game("")
+    while(!idOk){
+      val id = readLine()
+      if(id.length == 5 && id.forall(_.isDigit)){
+        idOk = true
+        game = new Game(id)
+        var nextPlayer = true
+        var plrCount = 0
+        while(nextPlayer){
+          print("Please enter name for player " + (plrCount + 1) + " or write 'START' to start the game.\n")
+          val name = readLine()
+          if(name.toUpperCase == "START") {
+            if(plrCount < 2) {
+              print("At least two players must be added before starting the game.\n")
+            } else nextPlayer = false
+          }
+          else {
+            try {
+              game.addPlayer(name, 0)
+              plrCount += 1
+            } catch {
+              case e:SameNameException =>
+            }
+          }
+          if(plrCount == 13) {
+            nextPlayer = false
+            print("Maximum number of players added.\n")
+          }
+        }
+        print("Players added, lets start the game\n" + game) // to check it works
+      } else {
+        print("ID is invalid. It has to be 5 digits without whitespace. Try again.\n")
+      }
+    }
+    game
+  }
+
+  //THE GAME STARTS HERE
+
+  print("Welcome to Cassino!\n" + "If you want to start a new game write 'NEW'\n" + "If you want to load an excisting game write the saved game's id.\n")
+  var game = new Game("")
+  val line = readLine()
+  if(line.toUpperCase == "NEW") {
+    game = newGame()
+  } else {
+    var idOk = false
+    while(!idOk){
+      if(line.length != 5 && !line.forall(_.isDigit)) print("ID is invalid. It has to be 5 digits without whitespace. Try again.\n")
+      else {
+        try {
+          val data = load(line + ".Cassino")
+          game = new Game(data(1))
+          for(i <- 2 until data.length){
+            val plrData = data(i).split(":")
+            game.addPlayer(plrData(0), plrData(1).toInt)
+          }
+          idOk = true
+        } catch {
+          case e: Exception => print("Loading game failed.\n")
+        }
+      }
+    }
+
+  }
+
+  //IF THE PLAYER WANTS TO SAVE CALL GAME.SAVE(ID.CASSINO)
+
   var gameOver = false
   while(!gameOver){
     game.startRound()

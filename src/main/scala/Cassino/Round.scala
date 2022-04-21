@@ -90,8 +90,8 @@ class Round(playerData: Map[Player, Int]) {
 
    */
   def checkValidity(card: Card, cards: Buffer[Card]): Boolean = {
-    var ret = false
-    //numeric value of the card to capture with
+    var ret = true
+    //numeric value of the card to capture with, some of them have special values
     var c = 0
     card.getValue() match {
       case 'A' => c = 14
@@ -101,19 +101,24 @@ class Round(playerData: Map[Player, Int]) {
     }
     print(c + "\n")
     //numeric values of the cards to capture in a buffer
-    val cc: Buffer[Int] = Buffer()
+    var cc: Buffer[Int] = Buffer()
     for(i <- cards){
       cc += i.getNumericValue()
       print(i.getNumericValue() + ", ")
     }
-  //EVERYTHING WORKS THIS FAR
-    if(!cc.forall(_ <= c)) print("\nThe move is invalid.")
+    cc = cc.filterNot(_ == c)
+    cc = cc.sorted.reverse
+
+    if(!cc.forall(_ < c)) print("\nThe move is illegal.")
+    else if(cc.sum%c != 0){print("\nThe move is illegal.")}
     else {
-      cc.filterNot(_ == c)
+      val ccc = cc
+      print("\n" + ccc)
+
+      def recursiveFunction(target: Int, values: Buffer[Int]): Unit = {
+
+      }
     }
-
-
-
     ret
   }
 

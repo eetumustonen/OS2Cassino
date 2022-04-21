@@ -8,12 +8,12 @@ object Test extends App {
   //Create a new instance of Game
   val game = new Game("TEST")
   //First we have to add some players
-  game.addPlayer("Eetu")
-  game.addPlayer("Konsta")
-  game.addPlayer("Tuomo")
-  game.addPlayer("Sepi")
-  game.addPlayer("Jaromir")
-  game.addPlayer("Bou")
+  game.addPlayer("Eetu", 0)
+  game.addPlayer("Konsta", 0)
+  game.addPlayer("Tuomo", 0)
+  game.addPlayer("Sepi", 0)
+  game.addPlayer("Jaromir", 0)
+  game.addPlayer("Bou", 0)
   //Let's confirm this worked
   Console.print(game)
   //It works
@@ -42,10 +42,10 @@ object Test extends App {
 
   //LETS CREATE ANOTHER GAME TO TEST END GAME
   val game2 = new Game("TEST2")
-  game2.addPlayer("Player1")
-  game2.addPlayer("Player2")
-  game2.addPlayer("Player3")
-  game2.addPlayer("Player4")
+  game2.addPlayer("Player1", 0)
+  game2.addPlayer("Player2", 0)
+  game2.addPlayer("Player3", 0)
+  game2.addPlayer("Player4", 0)
   game2.startRound()
   val round2 = game2.currentRound.get
   //Round class is modified for this test to have less cards in the starting deck
