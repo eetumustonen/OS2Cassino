@@ -1,63 +1,92 @@
 import Cassino._
 import Cassino.Deck._
-
+import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.Buffer
-import scala.collection.mutable.Map
-
+import scala.io.StdIn.readLine
+import scala.io.StdIn.readInt
 object Test extends App {
-  //Create a new instance of Game
-  val game = new Game("TEST")
-  //First we have to add some players
-  game.addPlayer("Eetu", 0)
-  game.addPlayer("Konsta", 0)
-  game.addPlayer("Tuomo", 0)
-  game.addPlayer("Sepi", 0)
-  game.addPlayer("Jaromir", 0)
-  game.addPlayer("Bou", 0)
-  //Let's confirm this worked
-  Console.print(game)
-  //It works
-  //Let's start the first round
-  game.startRound()
-  //Let's confirm this worked
-  val round1 = game.currentRound.get
-  Console.print(round1)
-  //It worked. the hashtags separate each turn and the circle marks whose in turn.
-  //Let's confirm we have a full deck. For this test an ordered deck is used.
-  Console.print(round1.deck)
-  //Yes we have. Let's deal the cards
-  round1.deal()
-  Console.print(round1)
-  //Let's test trailing
-  round1.trail('♠', 'A')
-  round1.trail('♠', '5')
-  Console.print(round1)
-  //It worked and the turn changed.
-  //Let's capture
-  val cardsToCapture = Buffer[Card](round1.table.returnCard('♣', 'Q').get)
-  round1.capture('♠', 'Q', cardsToCapture)
-  Console.print(round1)
-  Console.print(round1.stacksToString())
-  //Capturing works in this case and moves the cards to player's stack
 
-  //LETS CREATE ANOTHER GAME TO TEST END GAME
-  val game2 = new Game("TEST2")
-  game2.addPlayer("Player1", 0)
-  game2.addPlayer("Player2", 0)
-  game2.addPlayer("Player3", 0)
-  game2.addPlayer("Player4", 0)
-  game2.startRound()
-  val round2 = game2.currentRound.get
-  //Round class is modified for this test to have less cards in the starting deck
-  //Due to lack of cards some Exceptions are thrown
-  for(i <- 0 until 51) round2.deck.pickFirst()
-  Console.print(round2.deck)
-  round2.deal()
-  Console.print(round2)
-  round2.trail('♦', 'K')
-  Console.print(round2.stacksToString())
-  Console.print(game2)
-  game2.updatePoints()
-  Console.print(game2)
-  //Player3 gets 3 points, 1 for most cards and 2 for most spades.
+}
+
+object TestRoundEnd extends App {
+  val game = new Game("12345")
+  game.addPlayer("A", 0)
+  game.addPlayer("B", 0)
+  game.addPlayer("C", 0)
+  var gameOver = false
+  while(!gameOver){
+    game.startRound()
+    val round = game.currentRound.get
+    round.deal()
+    var roundOver = false
+    while(!roundOver){
+      roundOver = true
+
+      if(roundOver) {
+        roundOver = true
+        var cmdOk = false
+        while(!cmdOk) {
+          print("The round is over. If you wish to save the current results write 'save', else write 'play'.\n")
+          val a = readLine()
+          a.toUpperCase match {
+            case "SAVE" => {
+              try{
+                game.save(game.getID() + ".Cassino")
+                print("Game saved, you can load it later with this game's id: " +  game.getID() + "\n")
+                cmdOk = true
+                var continue = false
+                while(!continue) {
+                  print("If you wish to start the next round write 'play', else write 'quit'.\n")
+                  val play = readLine()
+                  play.toUpperCase match {
+                    case "PLAY" => continue = true
+                    case "QUIT" => {
+                      continue = true
+                      gameOver = true
+                    }
+                  }
+                }
+              } catch {
+                case e:FileNotFoundException => print("File not found.\n")
+                case e:IOException => print("Error writing to file.\n")
+                case _ =>
+              }
+            }
+            case "PLAY" => {
+              cmdOk = true
+            }
+            case _ => print("Invalid input.\n")
+          }
+        }
+      }
+    }
+    game.updatePoints()
+    if(game.getPoints().values.toBuffer.exists(_ >= 16)) gameOver  = true
+    else {
+      game.changeDealer()
+    }
+  }
+}
+
+object changeDealer extends App {
+  val game = new Game("123")
+  game.addPlayer("A", 2)
+  print(game)
+  game.addPlayer("B", 3)
+  print(game)
+  game.addPlayer("C", 5)
+  print(game)
+  game.addPlayer("D", 5)
+  print(game)
+  game.addPlayer("E", 5)
+  print(game)
+  game.addPlayer("F", 5)
+  print(game)
+
+  game.changeDealer()
+  game.changeDealer()
+  game.changeDealer()
+  game.changeDealer()
+  game.changeDealer()
+  game.changeDealer()
 }

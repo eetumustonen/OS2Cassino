@@ -1,31 +1,31 @@
 package Cassino
 import Cassino.Deck._
 import scala.collection.mutable.Buffer
+import scala.collection.mutable.LinkedHashMap
+/*
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
+class ValidityTest extends AnyFlatSpec with Matchers {
+
+  "checkValidity()" should "return correct boolean value" in {
+
+  }
+}
+*/
+
 
 object TestingCheckValidity extends App {
+  val p = scala.collection.mutable.LinkedHashMap((new Player("Test"))->123)
+  val round = new Round(p)
   val deck = new Deck
   deck.fullDeck()
-  deck.shuffle()
-  val card = deck.returnCard('♣', 'J').get
-  //val card = deck.returnCard('♦', 'T').get
-  //val card = deck.returnCard('♠', '2').get
+  val card = deck.returnCard('♣', '7').get
   val cards: Buffer[Card] = Buffer()
   cards += deck.returnCard('♣', '3').get
   cards += deck.returnCard('♣', '4').get
-  cards += deck.returnCard('♣', '9').get
-  cards += deck.returnCard('♣', '2').get
-  cards += deck.returnCard('♥', '4').get
-  cards += deck.returnCard('♥', 'T').get
-  cards += deck.returnCard('♥', 'A').get
-  cards += deck.returnCard('♥', '8').get
-  cards += deck.returnCard('♥', '3').get
-  cards += deck.returnCard('♥', 'J').get
-  //cards += deck.returnCard('♥', 'Q').get
-  val p = scala.collection.mutable.Map((new Player("Test"))->123)
-  val round = new Round(p)
-  print(card + "\n")
-  cards.foreach(print)
-  print("\n")
-  round.checkValidity(card, cards)
+  cards += deck.returnCard('♣', '5').get
+  val ret = round.checkValidity(card, cards)
+  print(ret)
 
 }

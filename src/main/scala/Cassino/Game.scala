@@ -1,18 +1,17 @@
 package Cassino
 import java.io.{BufferedReader, BufferedWriter, FileNotFoundException, FileReader, FileWriter, IOException}
-import scala.collection.mutable.Map
+import scala.collection.mutable.LinkedHashMap
 import scala.collection.mutable.Buffer
 
 class Game(id: String) {
   private val ID = id
-  private var players: Map[Player, Int] = Map()
-
+  private var players: LinkedHashMap[Player, Int] = LinkedHashMap()
   //MAYBE MAKE PRIVATE
   var currentRound: Option[Round] = None
 
   def getID(): String = ID
 
-  def getPoints(): Map[Player, Int] = players
+  def getPoints(): LinkedHashMap[Player, Int] = players
 
   def getPlayerNames(): Buffer[String] = {
     val ret: Buffer[String] = Buffer()
@@ -22,12 +21,18 @@ class Game(id: String) {
     ret
   }
 
+  def changeDealer(): Unit = {
+    val first = players.head
+    players.remove(first._1)
+    players(first._1) = first._2
+  }
+
   def addPlayer(name: String, points: Int): Player = {
     val player = new Player(name)
     try{
       if(this.getPlayerNames().contains(name)) throw new SameNameException("Player with the name \"" + name + "\" already exists" )
       else {
-        players(player) = points
+        players(new Player(name)) = points
       }
     } catch {
         case SameNameException(text) => {
@@ -40,7 +45,6 @@ class Game(id: String) {
 
   def startRound() = {
     try {
-      //CHECK THIS AGAIN IN THE USER INTERFACE AND ASK PLAYER NAME
       if(players.size == 0) throw new PlayersMissingException("Can't start a round before at least one player is added.")
       else currentRound = Some(new Round(players))
     } catch {
@@ -59,22 +63,21 @@ class Game(id: String) {
       data += i._1.getName() + ":" + i._2
     }
     data += "END"
-    data.foreach(print)
     try {
       val file = new FileWriter(filename)
       val linesOut = new BufferedWriter(file)
       try {
         for(i <- 0 until data.length){
-          linesOut.write(i)
+          linesOut.write(data(i) + "\n")
         }
       } finally {
-        file.close()
         linesOut.close()
+        file.close()
       }
     }
     catch {
-      case notFound: FileNotFoundException => Console.println("FileNotFound\n")
-      case e: IOException => Console.println("IOException\n")
+      case notFound: FileNotFoundException => throw new FileNotFoundException()
+      case e: IOException => throw new IOException()
     }
   }
 

@@ -1,13 +1,13 @@
 package Cassino
 import Cassino.Deck._
-import scala.collection.mutable.Map
 import scala.collection.mutable.Buffer
+import scala.collection.mutable.LinkedHashMap
 
-class Round(playerData: Map[Player, Int]) {
+class Round(playerData: LinkedHashMap[Player, Int]) {
   private var points = playerData
 
-  private var stacks: Map[Player, Deck] = Map()
-  var playerCards: Map[Player, Deck] = Map()
+  private var stacks: LinkedHashMap[Player, Deck] = LinkedHashMap()
+  var playerCards: LinkedHashMap[Player, Deck] = LinkedHashMap()
 
   val players = points.keySet.toBuffer
   private var turn = players.head
@@ -22,7 +22,7 @@ class Round(playerData: Map[Player, Int]) {
   val table: Deck = new Deck
   val deck: Deck = new Deck
   deck.fullDeck()
-  //deck.shuffle()                      REMOVE THE COMMENTS FROM THIS LINE
+  deck.shuffle()
 
   def stacksToString(): String = {
     var ret = "Players' stacks: \n"
@@ -76,7 +76,6 @@ class Round(playerData: Map[Player, Int]) {
         stacks(lastCapturer).addCard(table.pickFirst())
       }
       this.addNewPoints(countPoints())
-      Console.print("ROUND IS OVER AND THE POINTS ARE READY TO BE UPDATED \n")
     }
     this.nextTurn()
     }
@@ -84,13 +83,9 @@ class Round(playerData: Map[Player, Int]) {
 
   /*
   This is the algorithm to check whether the user's attempt to capture certain cards is valid.
-  First removing all cards that match the player’s card.
-  Then starting from combinations of 2 cards which’s sum is the player’s card are removed.
-  Then combinations of 3, 4, 5
-
    */
   def checkValidity(card: Card, cards: Buffer[Card]): Boolean = {
-    var ret = true
+    var ret = false
     //numeric value of the card to capture with, some of them have special values
     var c = 0
     card.getValue() match {
@@ -99,25 +94,39 @@ class Round(playerData: Map[Player, Int]) {
       case '2' => if(card.getSuit() == '♠') c = 15 else c = 2
       case _   => c = card.getNumericValue()
     }
-    print(c + "\n")
     //numeric values of the cards to capture in a buffer
     var cc: Buffer[Int] = Buffer()
     for(i <- cards){
       cc += i.getNumericValue()
-      print(i.getNumericValue() + ", ")
     }
-    cc = cc.filterNot(_ == c)
+    cc = cc.filter(_ != c)
     cc = cc.sorted.reverse
 
-    if(!cc.forall(_ < c)) print("\nThe move is illegal.")
-    else if(cc.sum%c != 0){print("\nThe move is illegal.")}
+    if(!cc.forall(_ < c)) print("\nThe move is illegal. Err1\n")
+    else if(cc.sum%c != 0) print("\nThe move is illegal. Err2\n")
+    else if(cc.isEmpty) ret = true
     else {
-      val ccc = cc
-      print("\n" + ccc)
-
       def recursiveFunction(target: Int, values: Buffer[Int]): Unit = {
-
+        val d = target - values(0)
+        if(values.contains(d)) {
+          cc -= (values(0), d)
+          cc = cc.sorted.reverse
+          if(!cc.isEmpty) recursiveFunction(target, cc)
+          else ret = true
+        }
+        else {
+          if(d == 1 || values.length == 1) ret = false
+          else {
+            val f = values.filter(_ < d).sorted.reverse
+            if(f.isEmpty) ret = false
+            else {
+              cc -= values(0)
+              recursiveFunction(d, f)
+            }
+          }
+        }
       }
+      recursiveFunction(c, cc)
     }
     ret
   }
@@ -126,6 +135,7 @@ class Round(playerData: Map[Player, Int]) {
     val card = playerCards(turn).returnCard(s, v)
     try{
       if(checkValidity(card.get, cards)) {
+        print("Capture was succesful!\n")
         for(i <- cards){
           stacks(turn).addCard(table.removeCard(Some(i)))
         }
@@ -138,11 +148,10 @@ class Round(playerData: Map[Player, Int]) {
             stacks(lastCapturer).addCard(table.pickFirst())
           }
           this.addNewPoints(countPoints())
-          Console.print("ROUND IS OVER AND THE POINTS ARE READY TO BE UPDATED \n")
         }
         this.nextTurn()
       }
-      else throw new InvalidCapture("This capture attempt is illegal.")
+      else throw new InvalidCapture("This capture attempt is illegal.\n")
     } catch {
       case InvalidCapture(text) => Console.print(text)
     }
@@ -152,8 +161,8 @@ class Round(playerData: Map[Player, Int]) {
     points(turn) += 1
   }
 
-  def countPoints(): Map[Player, Int] = {
-    val ret: Map[Player, Int] = Map()
+  def countPoints(): LinkedHashMap[Player, Int] = {
+    val ret: LinkedHashMap[Player, Int] = LinkedHashMap()
     var maxCards = stacks.head._1
     var maxSpades = stacks.head._1
     for(i <- players){
@@ -166,11 +175,11 @@ class Round(playerData: Map[Player, Int]) {
     ret
   }
 
-  def addNewPoints(newPoints: Map[Player, Int]): Unit = {
+  def addNewPoints(newPoints: LinkedHashMap[Player, Int]): Unit = {
     points = points ++ newPoints.map{ case (plr, pnt) => plr -> (pnt + points.getOrElse(plr, 0))}
   }
 
-  def getPoints(): Map[Player, Int] = points
+  def getPoints(): LinkedHashMap[Player, Int] = points
 
   override def toString(): String = {
     var ret = "\n"
@@ -178,7 +187,13 @@ class Round(playerData: Map[Player, Int]) {
       var space = ":"
       for(j <- 0 until 8-i._1.getName().length) space += " "
       if(turn.equals(i._1)) ret = ret + "● "+ i._1.getName() + space + i._2
-      else ret = ret + "  " + i._1.getName() + space + i._2
+      else {
+        ret = ret + "  " + i._1.getName() + space
+        for(i <- 0 until i._2.deckSize()){
+          ret = ret + " \uD83C\uDCA0  "
+        }
+        ret = ret + "\n"
+      }
     }
     ret = ret + "\n" + "Table: "+ table + "\n"
     ret

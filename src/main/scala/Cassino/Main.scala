@@ -43,7 +43,7 @@ object Main extends App {
         var nextPlayer = true
         var plrCount = 0
         while(nextPlayer){
-          print("Please enter name for player " + (plrCount + 1) + " or write 'START' to start the game.\n")
+          print("Please enter name for player " + (plrCount + 1) + " or write 'start' to start the game.\n")
           val name = readLine()
           if(name.toUpperCase == "START") {
             if(plrCount < 2) {
@@ -52,8 +52,11 @@ object Main extends App {
           }
           else {
             try {
-              game.addPlayer(name, 0)
-              plrCount += 1
+              if(name.isEmpty) print("The name must be atleast one character.\n")
+              else {
+                game.addPlayer(name, 0)
+                plrCount += 1
+              }
             } catch {
               case e:SameNameException =>
             }
@@ -72,16 +75,18 @@ object Main extends App {
   }
 
   //THE GAME STARTS HERE
-
-  print("Welcome to Cassino!\n" + "If you want to start a new game write 'NEW'\n" + "If you want to load an excisting game write the saved game's id.\n")
+  print("Welcome to Cassino!\n")
+  //INSTRUCTIONS HERE
   var game = new Game("")
+  var idOk = false
+  while(!idOk){
+  print("If you want to start a new game write 'new'\n" + "If you want to load an excisting game write the saved game's id.\n")
   val line = readLine()
   if(line.toUpperCase == "NEW") {
     game = newGame()
+    idOk = true
   } else {
-    var idOk = false
-    while(!idOk){
-      if(line.length != 5 && !line.forall(_.isDigit)) print("ID is invalid. It has to be 5 digits without whitespace. Try again.\n")
+      if(line.length != 5 && !line.forall(_.isDigit)) print("ID is invalid. It has to be 5 digits without whitespace.\n")
       else {
         try {
           val data = load(line + ".Cassino")
@@ -92,7 +97,9 @@ object Main extends App {
           }
           idOk = true
         } catch {
-          case e: Exception => print("Loading game failed.\n")
+          case e: Exception => {
+            print("Loading game failed.\n")
+          }
         }
       }
     }
@@ -108,7 +115,43 @@ object Main extends App {
     round.deal()
     var roundOver = false
     while(!roundOver){
-      if(round.roundIsOver()) roundOver = true
+      if(round.roundIsOver()) {
+        roundOver = true
+        var cmdOk = false
+        while(!cmdOk) {
+          print("The round is over. If you wish to save the current results write 'save', else write 'play'.\n")
+          val a = readLine()
+          a.toUpperCase match {
+            case "SAVE" => {
+              try{
+                game.save(game.getID() + ".Cassino")
+                print("Game saved, you can load it later with this game's id: " +  game.getID() + "\n")
+                cmdOk = true
+                var continue = false
+                while(!continue) {
+                  print("If you wish to start the next round write 'play', else write 'quit'.\n")
+                  val play = readLine()
+                  play.toUpperCase match {
+                    case "PLAY" => continue = true
+                    case "QUIT" => {
+                      continue = true
+                      gameOver = true
+                    }
+                  }
+                }
+              } catch {
+                case e:FileNotFoundException => throw new FileNotFoundException("File not found.\n")
+                case e:IOException => throw new IOException("Error writing to file.\n")
+                case _ =>
+              }
+            }
+            case "PLAY" => {
+              cmdOk = true
+            }
+            case _ => print("Invalid input.\n")
+          }
+        }
+      }
       else {
         print(round.inTurn().getName() + ", it's your turn." + "\n")
         var moveSuccesful = false
@@ -129,7 +172,7 @@ object Main extends App {
                 val cardIndex = readInt()
                 if(0 until round.playerCards(round.inTurn()).deckSize() contains cardIndex) {
                   val captureWith = round.playerCards(round.inTurn()).getCardbyIndex(cardIndex)
-                  print("Now give the indexes of cards to capture from the table, separated with commas. For example 0,2,3\n")
+                  print("Now give the indexes of cards to capture from the table, separated with commas. For example 0,1\n")
                   val cardsStr = readLine()
                   val cardsArray = cardsStr.split(",").distinct
                   cardsArray.foreach(_.trim())
@@ -162,6 +205,7 @@ object Main extends App {
                 val trailCard = round.playerCards(round.inTurn()).getCardbyIndex(cardIndex)
                 round.trail(trailCard.getSuit(), trailCard.getValue())
                 moveSuccesful = true
+                print("Trail succesfull.\n")
               } else print("INVALID INDEX, THE INDEX SHOULD BE WITHIN " + 0 + " to " + (round.playerCards(round.inTurn()).deckSize() - 1) + ". Your turn has started over." + "\n")
             }
             case _ => print("INVALID MOVE, options are C or T. Your turn has started over." + "\n")
@@ -169,12 +213,15 @@ object Main extends App {
         }
       }
     }
-    print("First round has ended\n")
     game.updatePoints()
-    //check if someone has 16 points
     if(game.getPoints().values.toBuffer.exists(_ >= 16)) gameOver  = true
+    else {
+      game.changeDealer()
+    }
   }
-  print(game)
-  val winner = game.getPoints().maxBy(_._2)
-  print("Winner is " + winner._1.getName() + "\nGame ended")
+  if(game.getPoints().values.toBuffer.exists(_ >= 16)) {
+    print(game)
+    val winner = game.getPoints().maxBy(_._2)
+    print("Winner is " + winner._1.getName() + "\nGame ended")
+  }
 }
