@@ -1,12 +1,11 @@
 package Cassino
-import java.io.{BufferedReader, BufferedWriter, FileNotFoundException, FileReader, FileWriter, IOException}
+import java.io.{BufferedWriter, FileNotFoundException, FileWriter, IOException}
 import scala.collection.mutable.LinkedHashMap
 import scala.collection.mutable.Buffer
 
 class Game(id: String) {
   private val ID = id
   private var players: LinkedHashMap[Player, Int] = LinkedHashMap()
-  //MAYBE MAKE PRIVATE
   var currentRound: Option[Round] = None
 
   def getID(): String = ID

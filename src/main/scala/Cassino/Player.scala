@@ -11,4 +11,5 @@ getName() returns the player's name that also works as an id, which is private s
 class Player(name: String) {
   private val id: String = name
   def getName(): String = id
+  override def toString(): String = id
 }

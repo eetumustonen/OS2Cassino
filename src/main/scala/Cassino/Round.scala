@@ -75,7 +75,7 @@ class Round(playerData: LinkedHashMap[Player, Int]) {
       for(i <- 0 until table.deckSize()){
         stacks(lastCapturer).addCard(table.pickFirst())
       }
-      this.addNewPoints(countPoints())
+      this.addNewPoints(countPoints(stacks))
     }
     this.nextTurn()
     }
@@ -102,8 +102,8 @@ class Round(playerData: LinkedHashMap[Player, Int]) {
     cc = cc.filter(_ != c)
     cc = cc.sorted.reverse
 
-    if(!cc.forall(_ < c)) print("\nThe move is illegal. Err1\n")
-    else if(cc.sum%c != 0) print("\nThe move is illegal. Err2\n")
+    if(!cc.forall(_ < c)) {}
+    else if(cc.sum%c != 0) {}
     else if(cc.isEmpty) ret = true
     else {
       def recursiveFunction(target: Int, values: Buffer[Int]): Unit = {
@@ -120,7 +120,9 @@ class Round(playerData: LinkedHashMap[Player, Int]) {
             val f = values.filter(_ < d).sorted.reverse
             if(f.isEmpty) ret = false
             else {
-              cc -= values(0)
+              val dropThis = values(0)
+              cc -= dropThis
+              f -= dropThis
               recursiveFunction(d, f)
             }
           }
@@ -147,7 +149,7 @@ class Round(playerData: LinkedHashMap[Player, Int]) {
           for(i <- 0 until table.deckSize()){
             stacks(lastCapturer).addCard(table.pickFirst())
           }
-          this.addNewPoints(countPoints())
+          this.addNewPoints(countPoints(stacks))
         }
         this.nextTurn()
       }
@@ -161,14 +163,14 @@ class Round(playerData: LinkedHashMap[Player, Int]) {
     points(turn) += 1
   }
 
-  def countPoints(): LinkedHashMap[Player, Int] = {
+  def countPoints(piles: LinkedHashMap[Player, Deck]): LinkedHashMap[Player, Int] = {
     val ret: LinkedHashMap[Player, Int] = LinkedHashMap()
-    var maxCards = stacks.head._1
-    var maxSpades = stacks.head._1
-    for(i <- players){
-      ret(i) = stacks(i).pointsAndSpades._1
-      if(stacks(i).deckSize() > stacks(maxCards).deckSize()) maxCards = i
-      if(stacks(i).pointsAndSpades._2 > stacks(maxSpades).pointsAndSpades._2) maxSpades = i
+    var maxCards = piles.head._1
+    var maxSpades = piles.head._1
+    for(i <- piles.keySet){
+      ret(i) = piles(i).pointsAndSpades._1
+      if(piles(i).deckSize() > piles(maxCards).deckSize()) maxCards = i
+      if(piles(i).pointsAndSpades._2 > piles(maxSpades).pointsAndSpades._2) maxSpades = i
     }
     ret(maxCards) += 1
     ret(maxSpades) += 2

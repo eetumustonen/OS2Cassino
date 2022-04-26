@@ -58,14 +58,13 @@ class Deck {
     ret
   }
 
-  //FOR TESTING
   def returnFirst(): Option[Card] = {
     var ret: Option[Card] = None
     try {
       if(!cards.isEmpty) {
         ret = Some(cards.head)
       }
-      else throw new EmptyDeckException("The deck is empty")
+      else throw new EmptyDeckException("The deck is empty\n")
     } catch {
       case EmptyDeckException(text) => Console.print(text + "\n")
     }
@@ -79,7 +78,7 @@ class Deck {
         ret = Some(cards.head)
         this.removeCard(ret)
       }
-      else throw new EmptyDeckException("The deck is empty")
+      else throw new EmptyDeckException("The deck is empty\n")
     } catch {
       case EmptyDeckException(text) => Console.print(text + "\n")
     }

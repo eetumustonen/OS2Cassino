@@ -12,7 +12,7 @@ class Card(s: Char, v: Char) {
   def getValue(): Char = value
   def getSuit(): Char = suit
 
-  //THESE ARE TABLE VALUES, HAND VALUES ARE HANDLED IN checkValidity()
+  //These are table values, hand values are handled checkValidity().
   def getNumericValue(): Int = {
     var r = 0
     value match {
@@ -25,7 +25,7 @@ class Card(s: Char, v: Char) {
     }
     r
   }
-
+  //This method is used in Deck.returnCard() to find a card by suit and value.
   def findThis(st: Char, vl: Char): Option[Card] = {
     var ret: Option[Card] = None
     if(st == suit && vl == value) ret = Some(this)
