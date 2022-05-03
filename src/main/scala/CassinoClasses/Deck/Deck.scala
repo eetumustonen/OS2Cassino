@@ -1,5 +1,5 @@
-package Cassino.Deck
-import Cassino.{CardDublicateException, EmptyDeckException, NoSuchCardException}
+package CassinoClasses.Deck
+import CassinoClasses.{CardDublicateException, EmptyDeckException, NoSuchCardException}
 
 import scala.collection.mutable.Buffer
 

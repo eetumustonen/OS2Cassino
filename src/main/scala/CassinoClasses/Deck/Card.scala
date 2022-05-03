@@ -1,4 +1,4 @@
-package Cassino.Deck
+package CassinoClasses.Deck
 
 
 /*

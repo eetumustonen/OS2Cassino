@@ -1,4 +1,4 @@
-package Cassino
+package CassinoClasses
 
 case class SameNameException(text: String) extends Exception(text)
 

@@ -1,5 +1,6 @@
-package Cassino
-import Cassino.Deck.Card
+package CassinoClasses
+import CassinoClasses.Deck.Card
+
 
 
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
@@ -7,9 +8,7 @@ import scala.collection.mutable.Buffer
 import scala.io.StdIn.readLine
 import scala.io.StdIn.readInt
 
-object Main extends App {
-  //ONLY SAVED FILES SHOULD BE ABLE TO BE LOADED
-  // require that its "#####.Cassino" # is a digit
+object Cassino extends App {
   def load(filename: String): Buffer[String] = {
     var ret: Buffer[String] = Buffer()
     try {
@@ -74,9 +73,26 @@ object Main extends App {
     game
   }
 
+  var help: String =
+    "Rules:\n One must collect points which are calculated after every round.\n The game continues until someone reaches 16 points.\n" +
+    " A player can play out one of his/her cards: it can be used either for \"Capturing\" cards from the table or to just \"Trail\" it on the table.\n" +
+    " If the player cannot take anything from the table, he/she must put one of his/her cards on the table.\n" +
+    " The next two tasks are done automatically:\n   If the player takes cards from the table, he/she puts them in a separate pile of his/her own. The pile is used to count the points after the round has ended.\n" +
+    "   Player must draw a new card from the deck after using a card so that he/she has always 4 cards in his/her hand.\n" +
+    " The number of cards on the table can vary. For example, if someone takes all the cards from the table, the next player must put a card on the empty table.\n" +
+    " (When the deck runs out, everyone plays until there are no cards left in any player’s hand).\n\n" +
+    "Capturing:\n" +
+    " Player can use a card to capture one or more cards of the same value and cards such that their summed value is equal to the used card.\n" +
+    " For example, a player can capture with a J (value 11):\n {J}, {4,7}, {4,7, J}\n" +
+    " If some player gets all the cards from the table at the same time, he/she gets a so called sweep which adds 1 point to the player's points.\n\n" +
+    "Special Cards:\n There are a couple of cards that are more valuable in the hand than in the table,\n Aces: 14 in hand, 1 on table\n Diamonds-10: 16 in hand, 10 on table\n Spades-2: 15 in hand, 2 on table\n" +
+    " For example: you can take two eights from the table with Diamonds-10\n For the other cards the values are same in the hand and on the table.\n\n" +
+    "Scoring:\n When every player runs out of cards, the last player to take cards from the table gets the rest of the cards from the table. After this the points are calculated and added to the existing scores.\n\n" +
+    " The following things grant points:\n\n Every sweep grants 1 point.\n Every Ace grants 1 point.\n The player with most cards gets 1 point.\n The player with most spades gets 2 points.\n The player with Diamonds-10 gets 2 points.\n The player with Spades-2 gets 1 point.\n\n" +
+    "The textual user interface will give you instructions as you play. Game can be saved in a file but only results between rounds can be saved.\n\n"
+
   //THE GAME STARTS HERE
-  print("Welcome to Cassino!\n")
-  //INSTRUCTIONS HERE
+  print("\nWelcome to Cassino!\n\n" + help)
   var game = new Game("")
   var idOk = false
   while(!idOk){
@@ -153,7 +169,7 @@ object Main extends App {
         }
       }
       else {
-        print(round.inTurn().getName() + ", it's your turn." + "\n")
+        print("\n" + round.inTurn().getName() + ", it's your turn." + "\n")
         var moveSuccesful = false
         while(!moveSuccesful){
           print(round)
@@ -162,7 +178,7 @@ object Main extends App {
             print("You can only trail because there is no cards to capture.\n")
             move = "T"
           } else {
-            print("Write\n'C' to capture\n'T' to trail.\n")
+            print("Write\n'c' to capture\n't' to trail.\n\n'help' for rules.\n'quit' to save and exit the game.\n")
             move = readLine().toUpperCase
           }
           move match {
@@ -208,7 +224,34 @@ object Main extends App {
                 print("Trail succesfull.\n")
               } else print("INVALID INDEX, THE INDEX SHOULD BE WITHIN " + 0 + " to " + (round.playerCards(round.inTurn()).deckSize() - 1) + ". Your turn has started over." + "\n")
             }
-            case _ => print("INVALID MOVE, options are C or T. Your turn has started over." + "\n")
+            case "QUIT" => {
+              var cmdOk = false
+              while(!cmdOk) {
+                print("If you wish to save the results from before this round write 'save', else press Enter.\n")
+                val a = readLine()
+                a.toUpperCase match {
+                  case "SAVE" => {
+                    try{
+                      game.save(game.getID() + ".Cassino")
+                      print("Game saved, you can load it later with this game's id: " +  game.getID() + "\n")
+                      cmdOk = true
+                    } catch {
+                      case e:FileNotFoundException => throw new FileNotFoundException("File not found.\n")
+                      case e:IOException => throw new IOException("Error writing to file.\n")
+                      case _ =>
+                    }
+                  }
+                  case _ => {
+                    cmdOk = true
+                    moveSuccesful = true
+                    roundOver = true
+                    gameOver = true
+                  }
+                }
+              }
+            }
+            case "HELP" => print(help)
+            case _ => print("INVALID MOVE, options are 'C','T','quit' or 'help'. Your turn has started over." + "\n")
           }
         }
       }

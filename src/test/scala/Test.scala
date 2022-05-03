@@ -1,5 +1,5 @@
-import Cassino._
-import Cassino.Deck._
+import CassinoClasses._
+import CassinoClasses.Deck._
 
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import scala.collection.mutable.Buffer
@@ -120,6 +120,7 @@ object TestingCheckValidity extends App {
   val ret6 = round.checkValidity(card2, cards3)
   print(ret6 + "\n")
 }
+
 /*
  This a test to check that Round's method countPoints()
  and Deck's method pointsndSpades() works correctly.

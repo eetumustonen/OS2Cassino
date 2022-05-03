@@ -1,5 +1,5 @@
-package Cassino
-import Cassino.Deck._
+package CassinoClasses
+import CassinoClasses.Deck._
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.LinkedHashMap
 
@@ -153,7 +153,7 @@ class Round(playerData: LinkedHashMap[Player, Int]) {
         }
         this.nextTurn()
       }
-      else throw new InvalidCapture("This capture attempt is illegal.\n")
+      else throw new InvalidCapture("\nTHIS CAPTURE ATTEMP IS ILLEGAL!\n\n")
     } catch {
       case InvalidCapture(text) => Console.print(text)
     }

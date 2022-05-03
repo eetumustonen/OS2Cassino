@@ -1,4 +1,4 @@
-package Cassino
+package CassinoClasses
 import java.io.{BufferedWriter, FileNotFoundException, FileWriter, IOException}
 import scala.collection.mutable.LinkedHashMap
 import scala.collection.mutable.Buffer
@@ -57,7 +57,7 @@ class Game(id: String) {
   }
 
   def save(filename: String) = {
-    val data = Buffer("Cassino", ID)
+    val data = Buffer("CassinoClasses", ID)
     for(i <- players){
       data += i._1.getName() + ":" + i._2
     }
